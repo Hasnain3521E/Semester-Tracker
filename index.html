@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fall 2025 BSBA Semester Tracker - Ultimate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Slate 50 */
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #94a3b8;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: #e2e8f0;
+        }
+        .progress-fill {
+            transition: width 0.5s ease-in-out;
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        /* Custom styles for the progress ring (SVG based) */
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.5s linear;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Navbar Component -->
+    <nav class="bg-white shadow-md sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-indigo-700">Fall 2025 Tracker</h1>
+                    <!-- This will now show the LIVE system date -->
+                    <span class="text-xs text-gray-400 ml-2 mt-1 hidden sm:inline">| Live Date: <span id="current-date" class="font-semibold"></span></span>
+                </div>
+                
+                <div class="flex items-center space-x-1 sm:space-x-4">
+                    <a href="#" id="nav-dashboard" onclick="showPage('Dashboard')" class="nav-link py-2 px-3 rounded-md text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition duration-150">Dashboard</a>
+                    <a href="#" id="nav-lecture" onclick="showPage('Lecture Tracker')" class="nav-link py-2 px-3 rounded-md text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition duration-150">Lectures</a>
+                    <a href="#" id="nav-tasks" onclick="showPage('Tasks & Quizzes')" class="nav-link py-2 px-3 rounded-md text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition duration-150">Tasks & Quizzes</a>
+                    <a href="#" id="nav-calendar" onclick="showPage('Academic Calendar')" class="nav-link py-2 px-3 rounded-md text-sm font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition duration-150">Calendar</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
+
+        <!-- 1. DASHBOARD VIEW -->
+        <div id="Dashboard-view" class="view space-y-8">
+            <section class="p-6 bg-white rounded-xl shadow-lg border border-gray-100 space-y-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
+                    <!-- Exam Countdown Card - now spans full width -->
+                    <div id="exam-countdown-card" class="rounded-xl p-5 shadow-lg border-2 border-indigo-200">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-3 flex items-center">
+                            <svg class="w-6 h-6 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Next Exam Countdown
+                        </h3>
+                        <div id="exam-countdown-data">
+                            <!-- Countdown data goes here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Overall Progress Snapshot -->
+                <div class="border-t pt-6">
+                    <h2 class="text-2xl font-bold text-indigo-700 mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-8v8m-4-8v8m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Overall Progress Summary
+                    </h2>
+                    <div id="stats-summary" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <!-- Stat Cards inserted here -->
+                    </div>
+                </div>
+
+                <!-- Course Progress Visuals -->
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-xl font-bold text-green-700 mb-4 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        Course Lecture Completion Rings
+                    </h3>
+                    <div id="course-completion-rings" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 justify-center">
+                        <!-- Progress Rings inserted here -->
+                    </div>
+                </div>
+
+                <!-- Course Performance Snapshot -->
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-xl font-bold text-purple-700 mb-4 flex items-center">
+                         <svg class="w-6 h-6 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l-2 2m2-2l2 2m-2-2v13"></path></svg>
+                        Course Performance Snapshot (Marks Graded)
+                    </h3>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Score (%)</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marks Earned / Available</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lecture Progress (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="course-performance-analysis" class="bg-white divide-y divide-gray-200">
+                                <!-- Analysis rows will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                        <svg class="w-4 h-4 mr-1 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                        Urgent Deadlines (Next 7 Days)
+                    </h3>
+                    <div id="upcoming-tasks" class="space-y-2">
+                        <p class="text-sm text-gray-500">No urgent tasks due in the next week.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- 2. LECTURE TRACKER VIEW -->
+        <div id="Lecture Tracker-view" class="view hidden">
+            <section class="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-4 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4m-4-4h.01"></path></svg>
+                    Lecture Study Progress (Total Lectures are editable)
+                </h2>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Lectures</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lectures Watched</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completion (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lecture-tracker-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Lecture rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- 3. TASKS & QUIZZES VIEW -->
+        <div id="Tasks & Quizzes-view" class="view hidden">
+            <section class="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-4 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    Quizzes, GDBs, and Task List
+                </h2>
+                <div class="mb-4 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                    <input type="text" id="filter-course" placeholder="Filter by Course (e.g., CS101, Exam)" class="p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 flex-grow">
+                    <select id="sort-tasks" class="p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="deadline">Sort by Deadline (Nearest First)</option>
+                        <option value="startdate-asc">Sort by Start Date (Oldest First)</option>
+                        <option value="startdate-desc">Sort by Start Date (Newest First)</option>
+                        <option value="course">Sort by Course Name</option>
+                        <option value="status">Sort by Status</option>
+                    </select>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th> 
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days Left</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marks</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Study Progress (%)</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="task-list-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Task rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 4. ACADEMIC CALENDAR VIEW -->
+        <div id="Academic Calendar-view" class="view hidden">
+            <section class="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+                <h2 class="text-2xl font-bold text-indigo-700 mb-4 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    ACADEMIC CALENDAR (Important Dates Only)
+                </h2>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day(s)</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calendar-body" class="bg-white divide-y divide-gray-200">
+                            <!-- Only important calendar rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+    </div>
+    
+    <script>
+        // --- Configuration ---
+        // FIX: Replaced MOCK_TODAY with the current live date/time to make the countdown accurate
+        const LIVE_TODAY = new Date(); 
+        let currentPage = 'Dashboard'; // Initial page state
+        
+        // --- Initial Data ---
+        const initialTasks = [
+            // CS101 – Introduction to Computing
+            { id: 1, course: "CS101", type: "Quiz", title: "Semester Quiz # 1", start: "2025-11-04", end: "2025-11-06", marks: 10, status: "Submitted", result: 7, studyProgress: 100, submitDate: "2025-11-05" },
+            { id: 2, course: "CS101", type: "Quiz", title: "Semester Quiz # 2", start: "2025-11-11", end: "2025-11-13", marks: 10, status: "Submitted", result: 8, studyProgress: 100, submitDate: "2025-11-13" },
+            { id: 3, course: "CS101", type: "Quiz", title: "Semester Quiz # 3", start: "2025-11-18", end: "2025-11-20", marks: 10, status: "Pending", result: 0, studyProgress: 50, submitDate: "" },
+            { id: 4, course: "CS101", type: "Quiz", title: "Semester Quiz # 4", start: "2025-11-25", end: "2025-11-27", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 5, course: "CS101", type: "Quiz", title: "Semester Quiz # 5", start: "2025-12-24", end: "2025-12-26", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 6, course: "CS101", type: "Quiz", title: "Semester Quiz # 6", start: "2025-12-30", end: "2026-01-01", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+
+            // ENG101 – English Comprehension
+            { id: 7, course: "ENG101", type: "Quiz", title: "Quiz 1", start: "2025-11-08", end: "2025-11-09", marks: 10, status: "Done", result: 9, studyProgress: 100, submitDate: "2025-11-05" },
+            { id: 8, course: "ENG101", type: "Quiz", title: "Quiz 2 (MISS THIS)", start: "2025-11-12", end: "2025-11-14", marks: 10, status: "Missed Deadline", result: 0, studyProgress: 0, submitDate: "" }, 
+            { id: 9, course: "ENG101", type: "Quiz", title: "Quiz 3", start: "2025-11-24", end: "2025-11-26", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 10, course: "ENG101", type: "Quiz", title: "Quiz 4", start: "2026-01-02", end: "2026-01-03", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 11, course: "ENG101", type: "Quiz", title: "Quiz 5", start: "2026-01-05", end: "2026-01-06", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+
+            // ISL202 – Islamic Studies
+            { id: 12, course: "ISL202", type: "Quiz", title: "Quiz 01", start: "2025-11-05", end: "2025-11-06", marks: 10, status: "Done", result: 9, studyProgress: 100, submitDate: "2025-11-05" },
+            { id: 13, course: "ISL202", type: "Quiz", title: "Quiz 02", start: "2025-11-12", end: "2025-11-13", marks: 10, status: "Submitted", result: 9, studyProgress: 100, submitDate: "2025-11-13" },
+            { id: 14, course: "ISL202", type: "Quiz", title: "Quiz 03", start: "2025-12-03", end: "2025-12-04", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 15, course: "ISL202", type: "Quiz", title: "Quiz 04", start: "2025-12-24", end: "2025-12-25", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 16, course: "ISL202", type: "Quiz", title: "Quiz 05", start: "2025-12-31", end: "2026-01-01", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 17, course: "ISL202", type: "GDB", title: "Rights of Muslims on each-other", start: "2025-11-19", end: "2025-11-21", marks: 15, status: "Watching", result: 0, studyProgress: 40, submitDate: "" },
+
+            // MGT211 – Introduction to Business
+            { id: 18, course: "MGT211", type: "GDB", title: "Types of Entrepreneurs", start: "2025-10-29", end: "2025-11-04", marks: 10, status: "Submitted", result: 8, studyProgress: 100, submitDate: "" },
+            { id: 19, course: "MGT211", type: "Quiz", title: "Quiz 01", start: "2025-11-10", end: "2025-11-12", marks: 10, status: "Done", result: 7, studyProgress: 100, submitDate: "2025-11-12" },
+            { id: 20, course: "MGT211", type: "Quiz", title: "Quiz 02", start: "2025-11-18", end: "2025-11-20", marks: 10, status: "Pending", result: 0, studyProgress: 60, submitDate: "" },
+            { id: 21, course: "MGT211", type: "Quiz", title: "Quiz 03", start: "2025-11-25", end: "2025-11-27", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 22, course: "MGT211", type: "Quiz", title: "Quiz 04", start: "2025-12-31", end: "2026-01-02", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 23, course: "MGT211", type: "Quiz", title: "Quiz 05", start: "2026-01-07", end: "2026-01-09", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+
+            // MGT503 – Principles of Management
+            { id: 24, course: "MGT503", type: "Quiz", title: "Quiz No:1 (Grade Pending)", start: "2025-10-29", end: "2025-10-31", marks: 10, status: "Submitted", result: 0, studyProgress: 100, submitDate: "" },
+            { id: 25, course: "MGT503", type: "GDB", title: "Emerging views of Management", start: "2025-11-04", end: "2025-11-10", marks: 10, status: "Submitted", result: 9, studyProgress: 100, submitDate: "2025-11-10" },
+            { id: 26, course: "MGT503", type: "Quiz", title: "Quiz No:2 (Due Today)", start: "2025-11-15", end: "2025-11-16", marks: 10, status: "Pending", result: 0, studyProgress: 95, submitDate: "" },
+            { id: 27, course: "MGT503", type: "Quiz", title: "Quiz No:3", start: "2025-11-19", end: "2025-11-21", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 28, course: "MGT503", type: "Quiz", title: "Quiz No:4", start: "2025-12-30", end: "2026-01-01", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+            { id: 29, course: "MGT503", type: "Quiz", title: "Quiz No:5", start: "2026-01-06", end: "2026-01-08", marks: 10, status: "Not Started", result: 0, studyProgress: 0, submitDate: "" },
+        ];
+
+        // Course structure data for performance score calculation
+        const courseMarkStructure = {
+            "CS101": { quizzes: 60, gdb: 0, midterm: 20, final: 20 },
+            "ENG101": { quizzes: 50, gdb: 0, midterm: 25, final: 25 },
+            "ISL202": { quizzes: 50, gdb: 15, midterm: 20, final: 15 },
+            "MGT211": { quizzes: 50, gdb: 10, midterm: 20, final: 20 },
+            "MGT503": { quizzes: 50, gdb: 10, midterm: 20, final: 20 },
+            "VU001": { quizzes: 100, gdb: 0, midterm: 0, final: 0 },
+        };
+
+        const initialLectures = {
+            "CS101": { total: 20, watched: 12 },
+            "ENG101": { total: 45, watched: 8 },
+            "ISL202": { total: 30, watched: 10 },
+            "MGT211": { total: 12, watched: 9 },
+            "MGT503": { total: 45, watched: 15 },
+            "VU001": { total: 12, watched: 12 },
+        };
+        
+        const academicCalendar = [
+            { desc: "Commencement of Classes - Fall 2025", day: "Monday", date: "October 13, 2025", type: "Classes Start" },
+            { desc: "Mid-Term Exam - Fall 2025", day: "Monday", date: "December 08, 2025", type: "Exam" },
+            { desc: "Birthday of Quaid-e-Azam Muhammad Ali Jinnah (Holiday)", day: "Thursday", date: "December 25, 2025", type: "Holiday" },
+            { desc: "Final-Term Exam - Fall 2025", day: "Monday", date: "January 26, 2026", type: "Exam" },
+            { desc: "Final-Term Result Announcement - Fall 2025", day: "Wednesday", date: "March 04, 2026", type: "Results" },
+        ];
+        
+        const courseNames = {
+             "CS101": "Introduction to Computing",
+             "ENG101": "English Comprehension",
+             "ISL202": "Islamic Studies",
+             "MGT211": "Introduction to Business",
+             "MGT503": "Principles of Management",
+             "VU001": "Ethics & Professionalism"
+        };
+
+
+        let state = {
+            tasks: JSON.parse(JSON.stringify(initialTasks)),
+            lectures: JSON.parse(JSON.stringify(initialLectures)),
+            filter: '',
+            sort: 'deadline'
+        };
+
+        // --- Navigation Functions (FIXED) ---
+
+        /**
+         * Shows the requested page and updates navigation styling.
+         * @param {string} pageName - The ID suffix of the view to show (e.g., 'Dashboard').
+         */
+        function showPage(pageName) {
+            currentPage = pageName;
+            
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.add('hidden');
+            });
+
+            // Show the selected view
+            const targetView = document.getElementById(pageName + '-view');
+            if (targetView) {
+                targetView.classList.remove('hidden');
+            }
+
+            // Update navigation link styling
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-extrabold');
+                link.classList.add('text-gray-700');
+            });
+
+            // Highlight the active link
+            const activeLink = document.getElementById('nav-' + pageName.toLowerCase().replace(/ /g, '-').replace('&-', ''));
+            if (activeLink) {
+                activeLink.classList.add('bg-indigo-50', 'text-indigo-700', 'font-extrabold');
+                activeLink.classList.remove('text-gray-700');
+            }
+
+            // Re-render UI content for the new page
+            updateUI();
+        }
+        
+        // Expose showPage globally for HTML inline onclick attributes
+        window.showPage = showPage;
+
+        // --- Utility Functions ---
+
+        function calculateDaysLeft(dateString) {
+            const oneDay = 24 * 60 * 60 * 1000;
+            const datePart = dateString.split(' - ')[0]; 
+            const endDate = new Date(datePart);
+            
+            // Set end date to midnight of the day AFTER the deadline
+            endDate.setDate(endDate.getDate() + 1); 
+            endDate.setHours(0, 0, 0, 0); 
+
+            // Get today's date at midnight for comparison
+            const today = new Date(LIVE_TODAY.getFullYear(), LIVE_TODAY.getMonth(), LIVE_TODAY.getDate());
+
+            const diffTime = endDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / oneDay);
+            
+            return diffDays;
+        }
+
+        function getDeadlineStyling(daysLeft, status) {
+            if (status === 'Done' || status === 'Submitted') {
+                return { colorClass: 'bg-green-100 text-green-700', priorityText: 'Completed' };
+            }
+            if (status === 'Missed Deadline') {
+                return { colorClass: 'bg-red-700 text-white', priorityText: 'Missed' };
+            }
+            if (daysLeft <= 0) {
+                return { colorClass: 'bg-red-500 text-white', priorityText: 'Overdue' };
+            }
+            if (daysLeft === 1) { 
+                return { colorClass: 'bg-red-300 text-red-800', priorityText: 'Due Today' };
+            }
+            if (daysLeft <= 3) {
+                return { colorClass: 'bg-orange-300 text-orange-800', priorityText: 'Urgent' };
+            }
+            if (daysLeft <= 7) {
+                return { colorClass: 'bg-yellow-100 text-yellow-700', priorityText: 'Upcoming' };
+            }
+            return { colorClass: 'bg-gray-100 text-gray-600', priorityText: 'Normal' };
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            if (dateString.includes(' - ')) return dateString; 
+
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+        
+        /**
+         * Renders an SVG Progress Ring component.
+         */
+        function renderProgressRing(percent, color) {
+            const radius = 30;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percent / 100) * circumference;
+
+            return `
+                <svg class="progress-ring" viewBox="0 0 80 80">
+                    <circle class="text-gray-200" stroke-width="6" stroke="currentColor" fill="transparent" r="${radius}" cx="40" cy="40"/>
+                    <circle 
+                        class="progress-ring-circle ${color}" 
+                        stroke-width="6" 
+                        stroke="currentColor" 
+                        fill="transparent" 
+                        r="${radius}" 
+                        cx="40" 
+                        cy="40" 
+                        style="stroke-dasharray: ${circumference} ${circumference}; stroke-dashoffset: ${offset};"
+                    />
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="text-xs font-bold fill-current text-gray-800">${percent.toFixed(0)}%</text>
+                </svg>
+            `;
+        }
+        
+        // --- Core Application Logic / Global Orchestrator ---
+
+        /**
+         * Orchestrates data processing and UI updates.
+         */
+        function updateUI() {
+            // 1. Intelligent Status Update: Auto-flag missed tasks
+            state.tasks.forEach(task => {
+                const daysLeft = calculateDaysLeft(task.end);
+                // Check if the end date has passed AND the task isn't marked complete
+                if (daysLeft <= 0 && !['Submitted', 'Done', 'Missed Deadline'].includes(task.status)) {
+                    task.status = 'Missed Deadline';
+                    task.studyProgress = 0;
+                    task.result = 0;
+                }
+            });
+
+            // 2. Render based on current page
+            if (currentPage === 'Dashboard') {
+                renderDashboard();
+            } else if (currentPage === 'Lecture Tracker') {
+                renderLectureTracker();
+            } else if (currentPage === 'Tasks & Quizzes') {
+                renderTaskList();
+            } else if (currentPage === 'Academic Calendar') {
+                renderCalendar();
+            }
+        }
+        
+        // Expose updateUI globally for HTML inline onclick attributes
+        window.updateUI = updateUI; 
+
+
+        // --- Dashboard Renderer Functions ---
+        
+        function renderDashboard() {
+            const stats = calculateOverallStats();
+            const upcomingTasksHtml = generateUpcomingTasks(stats.tasksWithDaysLeft);
+            
+            // 1. Next Exam Countdown
+            const nextExam = academicCalendar
+                .filter(item => item.type === 'Exam')
+                .map(item => ({ ...item, dateObj: new Date(item.date) }))
+                // Filter only future exams based on LIVE_TODAY
+                .filter(item => item.dateObj >= LIVE_TODAY)
+                .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime())[0];
+
+            let examCountdownHtml = '';
+            
+            if (nextExam) {
+                const daysLeft = calculateDaysLeft(nextExam.date);
+                
+                let daysText;
+                let countdownColor = 'bg-yellow-100 text-yellow-800';
+                
+                if (daysLeft <= 0) {
+                    // Note: If daysLeft is 0, it means the deadline passed *yesterday*. 
+                    // This case should theoretically not happen due to the LIVE_TODAY filter, 
+                    // but we keep the logic robust.
+                    daysText = 'EXAM DAY!';
+                    countdownColor = 'bg-red-500 text-white';
+                } else {
+                    // daysLeft is number of days remaining until midnight of the deadline day.
+                    // We subtract 1 to show days until the *start* of the exam day
+                    daysText = `${daysLeft - 1} Day${daysLeft - 1 !== 1 ? 's' : ''} Left`;
+                }
+
+                examCountdownHtml = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                        <div class="md:col-span-2 space-y-1">
+                            <p class="text-sm font-medium text-gray-500">Upcoming Exam: <span class="text-indigo-600 font-semibold">${nextExam.desc}</span></p>
+                            <span class="text-3xl font-extrabold text-gray-900">${formatDate(nextExam.date)}</span>
+                        </div>
+                        <div class="text-center md:text-right">
+                            <span class="inline-block text-2xl font-extrabold px-4 py-2 rounded-full ${countdownColor} shadow-md">${daysText}</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                 examCountdownHtml = `<p class="text-sm text-gray-500 p-2 bg-gray-50 rounded-md">No upcoming exams found in the academic calendar.</p>`;
+            }
+
+            document.getElementById('exam-countdown-data').innerHTML = examCountdownHtml;
+            
+            // 2. Summary Stats (Updated)
+            document.getElementById('stats-summary').innerHTML = [
+                { title: 'Total Tasks', value: stats.totalTasks, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                { title: 'Completed Tasks', value: stats.completedTasks + stats.submittedTasks, color: 'text-green-600', bg: 'bg-green-50' },
+                { title: 'Pending Study', value: stats.pendingTasks, color: 'text-yellow-600', bg: 'bg-yellow-50' },
+                { title: 'Critical Status', value: stats.criticalTasks, color: 'text-red-600', bg: 'bg-red-50' }
+            ].map(stat => `
+                <div class="p-4 rounded-lg ${stat.bg} flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">${stat.title}</p>
+                        <p class="text-2xl font-bold ${stat.color}">${stat.value}</p>
+                    </div>
+                </div>
+            `).join('');
+
+
+            // 3. Course Completion Rings
+            const ringsContainer = document.getElementById('course-completion-rings');
+            ringsContainer.innerHTML = stats.coursePerformance.map(course => {
+                const percent = course.lectureProgress;
+                let colorClass = 'text-red-500';
+                if (percent >= 90) colorClass = 'text-green-500';
+                else if (percent >= 60) colorClass = 'text-yellow-500';
+                else if (percent >= 30) colorClass = 'text-orange-500';
+
+                return `
+                    <div class="flex flex-col items-center p-3 bg-white rounded-lg shadow-md border">
+                        <div class="relative">
+                            ${renderProgressRing(percent, colorClass)}
+                        </div>
+                        <p class="text-sm font-semibold mt-2 text-gray-800">${course.course}</p>
+                        <p class="text-xs text-gray-500">Lectures</p>
+                    </div>
+                `;
+            }).join('');
+
+
+            // 4. Performance Analysis Table
+            const analysisContainer = document.getElementById('course-performance-analysis');
+            analysisContainer.innerHTML = stats.coursePerformance.map(course => {
+                const scorePercent = course.scorePercentage.toFixed(1);
+                const lecturePercent = course.lectureProgress.toFixed(1);
+                
+                let scoreColor = 'text-gray-700 font-bold';
+                if (course.scorePercentage >= 80) {
+                    scoreColor = 'text-green-600 font-extrabold';
+                } else if (course.scorePercentage >= 60) {
+                    scoreColor = 'text-orange-600 font-bold';
+                } else if (course.maxEarnedMarks > 0) {
+                    scoreColor = 'text-red-600 font-bold';
+                }
+
+                return `
+                    <tr class="hover:bg-purple-50 transition duration-100">
+                        <td class="px-4 py-3 text-sm font-semibold text-gray-900">${course.course}</td>
+                        <td class="px-4 py-3 text-lg ${scoreColor}">${scorePercent}%</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${course.earnedMarks} / ${course.maxEarnedMarks}</td>
+                        <td class="px-4 py-3">
+                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-2 ${lecturePercent >= 60 ? 'bg-green-500' : (lecturePercent >= 30 ? 'bg-yellow-500' : 'bg-red-500')} rounded-full" style="width: ${lecturePercent}%"></div>
+                            </div>
+                            <span class="text-xs text-gray-500">${lecturePercent}%</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+
+            // 5. Upcoming Tasks
+            document.getElementById('upcoming-tasks').innerHTML = upcomingTasksHtml;
+        }
+
+        function calculateOverallStats() {
+            // First, ensure all tasks have the calculated daysLeft
+            const tasksWithDaysLeft = state.tasks.map(task => ({
+                ...task,
+                daysLeft: calculateDaysLeft(task.end)
+            }));
+
+            const nonExamTasks = tasksWithDaysLeft; 
+
+            const totalTasks = nonExamTasks.length;
+            const completedTasks = nonExamTasks.filter(t => t.status === 'Done').length;
+            const submittedTasks = nonExamTasks.filter(t => t.status === 'Submitted').length;
+            
+            const pendingTasks = nonExamTasks.filter(t => 
+                t.status === 'Pending' || t.status === 'Watching' || t.status === 'Not Started'
+            ).length;
+            
+            const criticalTasks = nonExamTasks.filter(t => 
+                t.status === 'Missed Deadline'
+            ).length;
+
+            // Calculate Course Performance Scores
+            const courseScores = {};
+            
+            Object.keys(courseMarkStructure).forEach(course => {
+                courseScores[course] = {
+                    course: course,
+                    earnedMarks: 0,
+                    maxEarnedMarks: 0,
+                    lectureProgress: 0,
+                    scorePercentage: 0
+                };
+            });
+            
+            nonExamTasks.forEach(task => {
+                if (courseScores[task.course] && (task.status === 'Done' || task.status === 'Submitted') && task.result > 0) {
+                    courseScores[task.course].earnedMarks += task.result;
+                    courseScores[task.course].maxEarnedMarks += task.marks;
+                } else if (courseScores[task.course] && (task.status === 'Done' || task.status === 'Submitted' || task.status === 'Missed Deadline')) {
+                    // Count max marks for tasks that should have a grade, even if result is 0 (pending or missed)
+                    courseScores[task.course].maxEarnedMarks += task.marks;
+                }
+            });
+            
+            // Finalize calculation and add lecture progress
+            const coursePerformance = Object.keys(courseScores).map(course => {
+                const data = courseScores[course];
+                data.scorePercentage = data.maxEarnedMarks > 0 
+                    ? (data.earnedMarks / data.maxEarnedMarks) * 100
+                    : 0; 
+                
+                const lectureData = state.lectures[course];
+                data.lectureProgress = lectureData && lectureData.total > 0
+                    ? (lectureData.watched / lectureData.total) * 100
+                    : 0;
+                
+                return data;
+            });
+
+            return {
+                totalTasks,
+                completedTasks,
+                submittedTasks,
+                pendingTasks,
+                criticalTasks,
+                tasksWithDaysLeft,
+                coursePerformance
+            };
+        }
+        
+        function generateUpcomingTasks(allTasks) {
+            // Filter for tasks due today or in the future (daysLeft >= 1), and not yet submitted/done/missed
+            const urgentTasks = allTasks.filter(t => 
+                t.daysLeft >= 1 && // Includes tasks due tomorrow (daysLeft=1) and later
+                t.status !== 'Done' && 
+                t.status !== 'Submitted' &&
+                t.status !== 'Missed Deadline'
+            ).sort((a, b) => a.daysLeft - b.daysLeft);
+
+            const dueToday = allTasks.filter(t => 
+                t.daysLeft === 1 && // Day calculation means 1 day left = due today by midnight
+                t.status !== 'Done' && 
+                t.status !== 'Submitted' &&
+                t.status !== 'Missed Deadline'
+            ).sort((a, b) => a.daysLeft - b.daysLeft);
+
+            const criticalTasks = dueToday.concat(urgentTasks.filter(t => t.daysLeft <= 7 && t.daysLeft > 1));
+
+            if (criticalTasks.length === 0) {
+                return `<p class="text-sm text-gray-500 p-2 bg-gray-50 rounded-md">No urgent tasks due in the next week. Keep up the great work!</p>`;
+            }
+
+            return criticalTasks.map(task => {
+                const { colorClass, priorityText } = getDeadlineStyling(task.daysLeft, task.status);
+                let daysText = task.daysLeft === 1 ? 'DUE TODAY' : `${task.daysLeft - 1} DAYS LEFT`;
+                
+                return `
+                    <div class="p-3 border-l-4 rounded-lg shadow-sm ${task.daysLeft <= 1 ? 'border-red-500 bg-red-50' : 'border-yellow-500 bg-yellow-50'} flex justify-between items-center">
+                        <span class="text-sm font-semibold text-gray-800">${task.course} - ${task.title} (${task.type})</span>
+                        <span class="text-xs font-bold whitespace-nowrap px-2 py-1 rounded ${colorClass}">${daysText}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderCalendar() {
+            const tableBody = document.getElementById('calendar-body');
+            // Show all academic dates now that the calendar is simplified
+            const allDates = academicCalendar;
+
+            tableBody.innerHTML = allDates.map(item => {
+                let rowClass = 'hover:bg-indigo-50 transition duration-100';
+                let typeBadge = '';
+                
+                if (item.type === 'Holiday') {
+                    rowClass = 'bg-red-50 hover:bg-red-100';
+                    typeBadge = `<span class="status-badge bg-red-200 text-red-800">HOLIDAY</span>`;
+                } else if (item.type === 'Exam' || item.type === 'Classes Start') {
+                    rowClass = 'bg-yellow-50 hover:bg-yellow-100 font-semibold';
+                    typeBadge = `<span class="status-badge bg-yellow-300 text-yellow-800">${item.type.toUpperCase()}</span>`;
+                } else if (item.type === 'Results') {
+                    rowClass = 'bg-green-50 hover:bg-green-100 font-semibold';
+                    typeBadge = `<span class="status-badge bg-green-300 text-green-800">${item.type.toUpperCase()}</span>`;
+                } else if (item.type) {
+                    typeBadge = `<span class="status-badge bg-blue-100 text-blue-800">${item.type}</span>`;
+                }
+                
+                const formattedDate = item.date.includes(' - ') ? item.date : formatDate(item.date);
+
+                return `
+                    <tr class="${rowClass}">
+                        <td class="px-4 py-3 text-sm font-medium text-gray-900">${item.desc}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">${item.day}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">${formattedDate}</td>
+                        <td class="px-4 py-3">${typeBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderTaskList() {
+            const tableBody = document.getElementById('task-list-body');
+            const TASK_STATUSES = ['Not Started', 'Watching', 'Pending', 'Submitted', 'Done', 'Missed Deadline'];
+            
+            let filteredTasks = state.tasks.map(task => ({
+                ...task,
+                daysLeft: calculateDaysLeft(task.end)
+            }));
+
+            // 1. Filter
+            const filterText = state.filter.toLowerCase();
+            if (filterText) {
+                filteredTasks = filteredTasks.filter(task => 
+                    task.course.toLowerCase().includes(filterText) ||
+                    task.title.toLowerCase().includes(filterText) ||
+                    task.type.toLowerCase().includes(filterText)
+                );
+            }
+
+            // 2. Sort (Prioritize Missed, then Overdue, then Nearest Deadline)
+            if (state.sort === 'deadline') {
+                filteredTasks.sort((a, b) => {
+                    const statusOrderA = a.status === 'Missed Deadline' ? 0 : (a.daysLeft <= 0 && a.status !== 'Submitted' && a.status !== 'Done' ? 1 : 2);
+                    const statusOrderB = b.status === 'Missed Deadline' ? 0 : (b.daysLeft <= 0 && b.status !== 'Submitted' && b.status !== 'Done' ? 1 : 2);
+                    
+                    if (statusOrderA !== statusOrderB) return statusOrderA - statusOrderB;
+
+                    const completionA = (a.status === 'Done' || a.status === 'Submitted') ? 1 : 0;
+                    const completionB = (b.status === 'Done' || b.status === 'Submitted') ? 1 : 0;
+                    if (completionA !== completionB) return completionA - completionB; 
+                    
+                    return a.daysLeft - b.daysLeft; 
+                });
+            } else if (state.sort === 'startdate-desc') {
+                filteredTasks.sort((a, b) => new Date(b.start).getTime() - new Date(a.start).getTime());
+            } else if (state.sort === 'startdate-asc') {
+                filteredTasks.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+            } else if (state.sort === 'course') {
+                filteredTasks.sort((a, b) => a.course.localeCompare(b.course));
+            } else if (state.sort === 'status') {
+                 const statusOrder = { 'Missed Deadline': 0, 'Overdue': 1, 'Pending': 2, 'Watching': 3, 'Not Started': 4, 'Submitted': 5, 'Done': 6 };
+                filteredTasks.sort((a, b) => (statusOrder[a.status] || 7) - (statusOrder[b.status] || 7));
+            }
+
+            // 3. Render
+            tableBody.innerHTML = filteredTasks.map(task => {
+                const { colorClass, priorityText } = getDeadlineStyling(task.daysLeft, task.status);
+                
+                let daysText;
+                if (task.status === 'Missed Deadline') daysText = 'MISSED';
+                else if (task.status === 'Done' || task.status === 'Submitted') daysText = 'COMPLETED';
+                else if (task.daysLeft <= 0) daysText = 'OVERDUE';
+                else daysText = `${task.daysLeft - 1} Day${task.daysLeft - 1 !== 1 ? 's' : ''} Left`;
+
+                if (task.daysLeft === 1 && !['Done', 'Submitted', 'Missed Deadline'].includes(task.status)) {
+                    daysText = 'DUE TODAY';
+                }
+
+                const isResultEditable = task.status === 'Done';
+                const isStudyProgressEditable = task.status !== 'Done' && task.status !== 'Missed Deadline';
+
+
+                return `
+                    <tr class="hover:bg-indigo-50 transition duration-100 ${task.status === 'Missed Deadline' ? 'bg-red-100 hover:bg-red-200' : ''}">
+                        <td class="px-4 py-2 text-sm font-semibold text-gray-900">${task.course}</td>
+                        <td class="px-4 py-2 text-sm text-gray-500">${task.type}</td>
+                        <td class="px-4 py-2 text-sm text-gray-900">${task.title}</td>
+                        <td class="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">${formatDate(task.start)}</td>
+                        <td class="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">${formatDate(task.end)}</td>
+                        <td class="px-4 py-2 text-sm font-bold whitespace-nowrap">
+                            <span class="status-badge ${colorClass}">${daysText}</span>
+                        </td>
+                        <td class="px-4 py-2 text-sm text-gray-500">${task.marks}</td>
+                        <td class="px-4 py-2">
+                            <input 
+                                type="number" 
+                                min="0" max="100" 
+                                value="${task.studyProgress}"
+                                onchange="updateTaskProgress(${task.id}, 'studyProgress', this.value)"
+                                class="w-16 p-1 border rounded-md text-sm text-center focus:ring-indigo-500 focus:border-indigo-500 ${!isStudyProgressEditable ? 'bg-gray-100 cursor-not-allowed' : ''}"
+                                ${!isStudyProgressEditable ? 'disabled' : ''}
+                            >
+                        </td>
+                        <td class="px-4 py-2">
+                            <select 
+                                onchange="updateTaskProgress(${task.id}, 'status', this.value)"
+                                class="p-1 border rounded-md text-xs font-medium focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+                            >
+                                ${TASK_STATUSES.map(status => `
+                                    <option value="${status}" ${task.status === status ? 'selected' : ''}>${status}</option>
+                                `).join('')}
+                            </select>
+                        </td>
+                        <td class="px-4 py-2">
+                            <input 
+                                type="number" 
+                                min="0" max="${task.marks}" 
+                                value="${task.result || ''}" 
+                                onchange="updateTaskProgress(${task.id}, 'result', this.value)"
+                                class="w-16 p-1 border rounded-md text-sm text-center ${!isResultEditable ? 'bg-gray-100 cursor-not-allowed' : ''}"
+                                ${!isResultEditable ? 'disabled' : ''}
+                            >
+                            ${task.marks > 0 ? `<span class="text-xs text-gray-500">/${task.marks}</span>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderLectureTracker() {
+            const tableBody = document.getElementById('lecture-tracker-body');
+            const lectureCourses = Object.keys(state.lectures);
+
+            tableBody.innerHTML = lectureCourses.map(course => {
+                const data = state.lectures[course];
+                const completion = data.total > 0 ? ((data.watched / data.total) * 100).toFixed(0) : 0;
+
+                return `
+                    <tr class="hover:bg-gray-50 transition duration-100">
+                        <td class="px-6 py-3 text-sm font-medium text-gray-900">${course}</td>
+                        <td class="px-6 py-3">
+                            <input 
+                                type="number" 
+                                min="0" 
+                                value="${data.total}" 
+                                onchange="updateLectureTotal('${course}', this.value)"
+                                class="w-20 p-1 border border-indigo-300 rounded-md text-sm text-center font-semibold focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                        </td>
+                        <td class="px-6 py-3">
+                            <input 
+                                type="number" 
+                                min="0" max="${data.total}" 
+                                value="${data.watched}" 
+                                onchange="updateLectureWatched('${course}', this.value)"
+                                class="w-20 p-1 border rounded-md text-sm text-center focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                        </td>
+                        <td class="px-6 py-3 text-sm font-semibold text-green-600">${completion}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // --- Update Handlers ---
+
+        window.updateTaskProgress = (id, field, value) => {
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                if (field === 'studyProgress' || field === 'result') {
+                    let numValue = value ? parseFloat(value) : 0;
+                    if (field === 'studyProgress') {
+                        numValue = Math.max(0, Math.min(100, numValue));
+                    } else if (field === 'result') {
+                        numValue = Math.max(0, Math.min(task.marks, numValue));
+                    }
+                    task[field] = numValue;
+                } else if (field === 'status') {
+                    task[field] = value;
+                    if (value === 'Done' || value === 'Submitted') {
+                        task.studyProgress = 100;
+                    }
+                    if (value === 'Missed Deadline') {
+                        task.studyProgress = 0;
+                        task.result = 0; 
+                    }
+                    if (value !== 'Done' && value !== 'Submitted') {
+                        task.result = 0;
+                    }
+                } else {
+                    task[field] = value;
+                }
+                updateUI();
+            }
+        };
+        
+        window.updateLectureTotal = (course, total) => {
+            const data = state.lectures[course];
+            if (data) {
+                const newTotal = Math.max(1, parseInt(total) || 1);
+                data.total = newTotal;
+                data.watched = Math.min(data.watched, newTotal);
+                updateUI();
+            }
+        };
+
+        window.updateLectureWatched = (course, watched) => {
+            const data = state.lectures[course];
+            if (data) {
+                const newWatched = Math.min(parseInt(watched), data.total);
+                data.watched = newWatched >= 0 ? newWatched : 0;
+                updateUI();
+            }
+        };
+
+        /**
+         * Runs initial setup, including navigation.
+         */
+        
+// --- LocalStorage Persistence ---
+function saveState() {
+    localStorage.setItem('tracker_state', JSON.stringify(state));
+}
+
+function loadState() {
+    const saved = localStorage.getItem('tracker_state');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            state = parsed;
+        } catch(e) { console.error(e); }
+    }
+}
+
+// Patch update functions to save
+const orig_updateTaskProgress = window.updateTaskProgress;
+window.updateTaskProgress = (id, field, value) => {
+    orig_updateTaskProgress(id, field, value);
+    saveState();
+};
+const orig_updateLectureTotal = window.updateLectureTotal;
+window.updateLectureTotal = (course, total) => {
+    orig_updateLectureTotal(course, total);
+    saveState();
+};
+const orig_updateLectureWatched = window.updateLectureWatched;
+window.updateLectureWatched = (course, watched) => {
+    orig_updateLectureWatched(course, watched);
+    saveState();
+};
+
+function setupNavigation() {
+            document.getElementById('current-date').textContent = formatDate(LIVE_TODAY.toISOString().split('T')[0]);
+
+            document.getElementById('filter-course').addEventListener('input', (e) => {
+                state.filter = e.target.value;
+                updateUI();
+            });
+
+            document.getElementById('sort-tasks').addEventListener('change', (e) => {
+                state.sort = e.target.value;
+                updateUI();
+            });
+
+            // Initial render - set default page
+            showPage(currentPage);
+        }
+
+        // --- Event Listeners and Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+            setupNavigation();
+        });
+    </script>
+</body>
+</html>
